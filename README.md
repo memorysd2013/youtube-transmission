@@ -1,0 +1,1 @@
+this is a google chrome extension to control youtube video playback rate and time range loop.
