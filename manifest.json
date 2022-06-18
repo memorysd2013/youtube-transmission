@@ -1,0 +1,39 @@
+{
+  "manifest_version": 3,
+  "name": "Youtube Transmission",
+  "version": "1.0.0",
+  "description": "",
+  "action": {
+    "default_popup": "popup.html"
+  },
+  "background": {
+    "service_worker": "/background.js"
+  },
+  "permissions": [
+    "tabs"
+  ],
+  "content_scripts": [
+    {
+      "matches": [
+        "*://www.youtube.com/*"
+      ],
+      "js": [
+        "content.js",
+        "core.js"
+      ]
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "/core.js"
+      ],
+      "matches": [
+        "*://www.youtube.com/*"
+      ]
+    }
+  ],
+  "icons": {
+    "128": "/images/ytt128.png"
+  }
+}

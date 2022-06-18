@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" integrity="sha512-KfkfwYDsLkIlwQp6LFnl8zNdLGxu9YAA1QvwINks4PhcElQSvqcyVLLD9aMhXd13uQjoXtEKNosOWaZqXgel0g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link rel="stylesheet" href="popup.css">
+  <title>YouTube Transmission</title>
+</head>
+<body>
+  <div class="container flex-box">
+    <img src="/images/ytt128.png" alt="ytt" class="logo">
+    <span class="title">YouTube Transmission</span>
+  </div>
+
+  <div class="divide"></div>
+
+  <div class="container">
+    <span>Speed Rate</span>
+    <span id="ytt-speed">100</span>
+    <span>%</span>
+    <div class="flex-box">
+      <i id="ytt-minus" class="icon main-c fa-solid fa-circle-minus"></i>
+      <input id="ytt-slider" type="range" list="ytt-tickmarks" value="100" min="10" max="200" step="5">
+      <i id="ytt-plus" class="icon main-c fa-solid fa-circle-plus"></i>
+      <button id="ytt-reset" class="ytt-button">Reset</button>
+    </div>
+  </div>
+
+  <div class="divide"></div>
+
+  <div class="container">
+    <span>Loop Setting</span>
+    <span id="ytt-loop-prompt"></span>
+    <div class="flex-box">
+      <input type="number" name="loop-start-min" id="ytt-loop-start-m" value="00">
+      <span>：</span>
+      <input type="number" name="loop-start-sec" id="ytt-loop-start-s" value="00">
+      <span>～</span>
+      <input type="number" name="loop-end-min" id="ytt-loop-end-m" value="00">
+      <span>：</span>
+      <input type="number" name="loop-end-sec" id="ytt-loop-end-s" value="00">
+      <button id="ytt-loop" class="ytt-button">Loop</button>
+      <button id="ytt-stop" class="ytt-button">Stop</button>
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
