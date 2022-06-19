@@ -4,8 +4,6 @@ const TIME_MAX = 59
 const TIME_MIN = 0
 
 // 點開 popup 後才會執行
-console.log('pop.js excute')
-
 const EL_SPEED = document.getElementById('ytt-speed')
 const EL_SLIDER = document.getElementById('ytt-slider')
 const EL_PLUS = document.getElementById('ytt-plus')
@@ -36,10 +34,16 @@ EL_STOP_BTN.addEventListener('click', () => {
   setLoopState(false)
 })
 
+[EL_LOOP_START_M, EL_LOOP_START_S, EL_LOOP_END_M, EL_LOOP_END_S].forEach(el => {
+  el.addEventListener('change', rangeFormatter.bind(null, el))
+  el.addEventListener('focus', () => el.select())
+})
+
+chrome.runtime.connect({ name: "popup" });
+
 sendMessage(
   { init: true },
   function (res) {
-    console.log({ res })
     if (res.notSupport) {
       setNotSupport()
     }
@@ -62,14 +66,13 @@ function setSpeed(val) {
 }
 
 function sendMessage(message, callback = defaultCallback) {
-  console.log({ message, callback })
   chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
     chrome.tabs.sendMessage(tabs[0].id, message, callback)
   });
 }
 
 function defaultCallback(data) {
-  console.log('defaultCallback', data)
+  //
 }
 
 /**
@@ -77,7 +80,6 @@ function defaultCallback(data) {
  * @param val [Number]
  */
 function updateSpeed(val) {
-  console.log('updateSpeed')
   if (val <= RATE_MAX && val >= RATE_MIN) {
     setSpeed(val)
     sendMessage({ rate: val / 100 })
@@ -119,15 +121,5 @@ function setTimeToEl(val, elMin, elSec) {
 }
 
 function setNotSupport() {
-  alert('not support')
+  // 
 }
-
-/**
- * Listener
- */
-[EL_LOOP_START_M, EL_LOOP_START_S, EL_LOOP_END_M, EL_LOOP_END_S].forEach(el => {
-  el.addEventListener('change', rangeFormatter.bind(null, el))
-  el.addEventListener('focus', () => el.select())
-})
-
-chrome.runtime.connect({ name: "popup" });

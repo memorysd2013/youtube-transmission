@@ -151,8 +151,14 @@ input[type=number] {
 }
 
 .title {
-  font-size: 1.375rem;
+  font-size: 1.25rem;
   display: block;
+  margin-right: .5rem;
+}
+
+.version {
+  position: relative;
+  bottom: -3px;
 }
 
 .logo {

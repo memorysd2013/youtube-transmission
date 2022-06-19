@@ -9,21 +9,14 @@ class Transmission {
       this.stopLoop()
     }
 
-    console.log({ start, end })
-
     this.el.currentTime = start
     this.el?.play()
 
     timer = setInterval(() => {
-      console.log('current', this.el.currentTime, timer)
-
       if (this.el.currentTime >= end || this.el.currentTime < start) {
         this.el.currentTime = start
       }
-
     }, 1000);
-
-    console.log({ timer })
   }
 
   stopLoop() {
@@ -41,13 +34,10 @@ let timer = null;
 let ytVideoEl = null;
 let _t = null;
 
-console.log('content.js', window)
-
 /**
  * onMessage
  */
 chrome.runtime.onMessage.addListener((data, sender, sendResponse) => {
-  console.log({ data, ytVideoEl })
   let response = {}
 
   if (data.init) {
@@ -76,8 +66,6 @@ chrome.runtime.onMessage.addListener((data, sender, sendResponse) => {
  * 點擊 extension 後觸發
  */
 function init() {
-  console.log('init')
-
   let response = {}
 
   if (!_t || !ytVideoEl) {
