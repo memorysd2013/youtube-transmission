@@ -1,29 +1,24 @@
 class Transmission {
   constructor(el, rate) {
-    this.loopStart = 0;
-    this.loopEnd = 0;
     this.el = el;
     this.rate = rate;
   }
 
-  get loopTime() {
-    return {
-      loopStart: this.loopStart,
-      loopEnd: this.loopEnd,
-    }
-  }
-
   loop(start, end) {
-    this.loopStart = start;
-    this.loopEnd = end;
+    if (timer) {
+      this.stopLoop()
+    }
+
     console.log({ start, end })
-    this.el.currentTime = this.loopStart
+
+    this.el.currentTime = start
+    this.el?.play()
 
     timer = setInterval(() => {
       console.log('current', this.el.currentTime, timer)
 
-      if (this.el.currentTime >= this.loopEnd || this.el.currentTime < this.loopStart) {
-        this.el.currentTime = this.loopStart
+      if (this.el.currentTime >= end || this.el.currentTime < start) {
+        this.el.currentTime = start
       }
 
     }, 1000);
@@ -48,6 +43,9 @@ let _t = null;
 
 console.log('content.js', window)
 
+/**
+ * onMessage
+ */
 chrome.runtime.onMessage.addListener((data, sender, sendResponse) => {
   console.log({ data, ytVideoEl })
   let response = {}
@@ -71,10 +69,6 @@ chrome.runtime.onMessage.addListener((data, sender, sendResponse) => {
   sendResponse(response)
 });
 
-chrome.runtime.onConnect.addListener((data) => {
-  console.log('content.js onConnect', { data });
-});
-
 /**
  * function
  */
@@ -87,18 +81,18 @@ function init() {
   let response = {}
 
   if (!_t || !ytVideoEl) {
+    // 抓到 youtube video 元素就初始化 Transmission 否則返回不支援
     ytVideoEl = document.querySelector('.html5-main-video')
-
     if (ytVideoEl) {
       _t = new Transmission(ytVideoEl, ytVideoEl.playbackRate)
-      response = { rate: ytVideoEl.playbackRate, ..._t.loopTime }
+      response = { rate: ytVideoEl.playbackRate }
     } else {
       _t = null;
-      response = { msg: 'cannotFindEl' }
+      response = { notSupport: true }
     }
   } else {
-    response = { rate: ytVideoEl.playbackRate, ..._t.loopTime }
+    // 已經初始化過 返回現有的資訊讓插件可以同步參數
+    response = { rate: ytVideoEl.playbackRate }
   }
-
   return response
 }

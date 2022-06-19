@@ -18,6 +18,7 @@ const EL_LOOP_START_S = document.getElementById('ytt-loop-start-s')
 const EL_LOOP_END_M = document.getElementById('ytt-loop-end-m')
 const EL_LOOP_END_S = document.getElementById('ytt-loop-end-s')
 const EL_PROMPT = document.getElementById('ytt-loop-prompt')
+const EL_LOOP_ICON = document.getElementById('ytt-looping')
 
 // unit: %
 let speed = 100
@@ -27,21 +28,30 @@ EL_SLIDER.addEventListener('change', () => updateSpeed(Number(EL_SLIDER.value)))
 EL_PLUS.addEventListener('click', () => updateSpeed(speed + 1))
 EL_MINUS.addEventListener('click', () => updateSpeed(speed - 1))
 EL_RESET.addEventListener('click', () => updateSpeed(100))
-EL_LOOP_BTN.addEventListener('click', () => toggleLoop(true))
-EL_STOP_BTN.addEventListener('click', () => toggleLoop(false))
+EL_LOOP_BTN.addEventListener('click', () => toggleLoop())
+EL_STOP_BTN.addEventListener('click', () => {
+  setTimeToEl(0, EL_LOOP_START_M, EL_LOOP_START_S)
+  setTimeToEl(0, EL_LOOP_END_M, EL_LOOP_END_S)
+  sendMessage({ stopLooping: true })
+  setLoopState(false)
+})
 
 sendMessage(
   { init: true },
   function (res) {
-    setSpeed(res.rate * 100)
-    setTimeToEl(res.loopStart, EL_LOOP_START_M, EL_LOOP_START_S)
-    setTimeToEl(res.loopEnd, EL_LOOP_END_M, EL_LOOP_END_S)
+    console.log({ res })
+    if (res.notSupport) {
+      setNotSupport()
+    }
+    if (res.rate) {
+      setSpeed(res.rate * 100)
+    }
   }
 )
 
 /**
  * 設置速率
- * val must has be Number
+ * @param val [Number]
  */
 function setSpeed(val) {
   speed = val
@@ -49,12 +59,6 @@ function setSpeed(val) {
   if (EL_SLIDER.value !== val) {
     EL_SLIDER.value = val
   }
-}
-
-async function updateRate(rate) {
-  // let [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-
-  sendMessage({ rate })
 }
 
 function sendMessage(message, callback = defaultCallback) {
@@ -68,38 +72,54 @@ function defaultCallback(data) {
   console.log('defaultCallback', data)
 }
 
+/**
+ * 設置速率
+ * @param val [Number]
+ */
 function updateSpeed(val) {
   console.log('updateSpeed')
   if (val <= RATE_MAX && val >= RATE_MIN) {
     setSpeed(val)
-    updateRate(val / 100)
+    sendMessage({ rate: val / 100 })
   }
 }
 
 function toggleLoop(val) {
-  console.log(EL_LOOP_START_M.value)
-  console.log(EL_LOOP_START_S.value)
-  console.log(EL_LOOP_END_M.value)
-  console.log(EL_LOOP_END_S.value)
-
-  const start = Number(EL_LOOP_START_M.value) * 60 + Number(EL_LOOP_START_S.value)
-  const end = Number(EL_LOOP_END_M.value) * 60 + Number(EL_LOOP_END_S.value)
-
-  if (start < end) {
+  const loopStart = Number(EL_LOOP_START_M.value) * 60 + Number(EL_LOOP_START_S.value)
+  const loopEnd = Number(EL_LOOP_END_M.value) * 60 + Number(EL_LOOP_END_S.value)
+  if (loopStart < loopEnd) {
     EL_PROMPT.textContent = ''
   } else {
     EL_PROMPT.textContent = 'loop time is invalid!'
     return
   }
+  sendMessage({ loopStart, loopEnd })
+  setLoopState(true)
+}
 
-  if (val) {
-    sendMessage({ loopStart: start, loopEnd: end })
-  } else {
-    sendMessage({ stopLooping: true })
+function setLoopState(isLoop) {
+  EL_LOOP_ICON.style.display = isLoop ? 'inline-block' : 'none'
+}
+
+function rangeFormatter(el) {
+  if (el.value > TIME_MAX) {
+    el.value = TIME_MAX;
+  } else if (el.value < TIME_MIN) {
+    el.value = TIME_MIN;
   }
+  // 補 0 或去除 0
+  el.value = Number(el.value) < 10 ? `0${Number(el.value)}` : Number(el.value)
+}
 
-  EL_LOOP_BTN.style.display = !val ? 'block' : 'none'
-  EL_STOP_BTN.style.display = val ? 'block' : 'none'
+function setTimeToEl(val, elMin, elSec) {
+  let m = Math.floor(val / 60)
+  let s = val % 60
+  elMin.value = m < 10 ? `0${m}` : m
+  elSec.value = s < 10 ? `0${s}` : s
+}
+
+function setNotSupport() {
+  alert('not support')
 }
 
 /**
@@ -110,19 +130,4 @@ function toggleLoop(val) {
   el.addEventListener('focus', () => el.select())
 })
 
-function rangeFormatter(el) {
-  if (el.value > TIME_MAX) {
-    el.value = TIME_MAX;
-  } else if (el.value < TIME_MIN) {
-    el.value = TIME_MIN;
-  }
-  // 補 0 或去除 0
-  el.value = Number(el.value) < 10 ? `0${Number(el.value)}` : Number(el.value)
-};
-
-function setTimeToEl(val, elMin, elSec) {
-  let m = Math.floor(val / 60)
-  let s = val % 60
-  elMin.value = m < 10 ? `0${m}` : m
-  elSec.value = s < 10 ? `0${s}` : s
-};
+chrome.runtime.connect({ name: "popup" });
