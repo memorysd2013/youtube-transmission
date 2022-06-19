@@ -18,8 +18,7 @@
         "*://www.youtube.com/*"
       ],
       "js": [
-        "content.js",
-        "core.js"
+        "content.js"
       ]
     }
   ],
