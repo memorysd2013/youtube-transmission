@@ -33,7 +33,8 @@ EL_RESET.addEventListener('click', () => updateSpeed(100))
 EL_LOOP_BTN.addEventListener('click', () => startLoop())
 EL_STOP_BTN.addEventListener('click', () => stopLoop())
 
-[EL_LOOP_START_M, EL_LOOP_START_S, EL_LOOP_END_M, EL_LOOP_END_S].forEach(el => {
+let arr = [EL_LOOP_START_M, EL_LOOP_START_S, EL_LOOP_END_M, EL_LOOP_END_S]
+arr.forEach(el => {
   el.addEventListener('change', rangeFormatter.bind(null, el))
   el.addEventListener('focus', () => el.select())
 })
