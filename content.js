@@ -4,14 +4,12 @@ class Transmission {
     this.rate = rate;
   }
 
-  loop(start, end) {
+  startLoop(start, end) {
     if (timer) {
       this.stopLoop()
     }
-
     this.el.currentTime = start
     this.el?.play()
-
     timer = setInterval(() => {
       if (this.el.currentTime >= end || this.el.currentTime < start) {
         this.el.currentTime = start
@@ -48,8 +46,8 @@ chrome.runtime.onMessage.addListener((data, sender, sendResponse) => {
     ytVideoEl.playbackRate = data.rate
   }
 
-  if (Object(data).hasOwnProperty('loopStart')) {
-    _t.loop(data.loopStart, data.loopEnd)
+  if (Object(data).hasOwnProperty('loopStartAt')) {
+    _t.startLoop(data.loopStartAt, data.loopEndAt)
   }
 
   if (data.stopLooping) {
@@ -59,9 +57,6 @@ chrome.runtime.onMessage.addListener((data, sender, sendResponse) => {
   sendResponse(response)
 });
 
-/**
- * function
- */
 /**
  * 點擊 extension 後觸發
  */

@@ -33,6 +33,8 @@
     }
   ],
   "icons": {
+    "16": "/images/ytt16.png",
+    "48": "/images/ytt48.png",
     "128": "/images/ytt128.png"
   }
 }
