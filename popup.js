@@ -140,8 +140,6 @@ function startLoop() {
  * - 觸發清空 content 的 timer
  */
 function stopLoop() {
-  // setTimeToEl(0, EL_LOOP_START_M, EL_LOOP_START_S)
-  // setTimeToEl(0, EL_LOOP_END_M, EL_LOOP_END_S)
   sendMessage({ stopLooping: true })
   setLoopState(false)
 }
