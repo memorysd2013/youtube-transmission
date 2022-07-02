@@ -3,6 +3,10 @@ const RATE_MIN = 10
 const TIME_MAX = 59
 const TIME_MIN = 0
 
+const LS_SAVE_LOOP = 'ytt-save-loop-params'
+const LS_LOOP_S = 'ytt-ls'
+const LS_LOOP_E = 'ytt-le'
+
 /**
  * @popupjs
  *   點開 popup 後才會執行，點擊網頁後等同於 blur popup 會銷毀
@@ -22,6 +26,7 @@ const EL_LOOP_END_M = document.getElementById('ytt-loop-end-m')
 const EL_LOOP_END_S = document.getElementById('ytt-loop-end-s')
 const EL_PROMPT = document.getElementById('ytt-loop-prompt')
 const EL_LOOP_ICON = document.getElementById('ytt-looping')
+const EL_LOOP_SAVE = document.getElementById('ytt-save-loop-params')
 
 // unit: %
 let speed = 100
@@ -32,14 +37,21 @@ EL_MINUS.addEventListener('click', () => updateSpeed(speed - 1))
 EL_RESET.addEventListener('click', () => updateSpeed(100))
 EL_LOOP_BTN.addEventListener('click', () => startLoop())
 EL_STOP_BTN.addEventListener('click', () => stopLoop())
+EL_LOOP_SAVE.addEventListener('change', e => {
+  useStorage(LS_SAVE_LOOP, e.target.checked)
+  e.target.checked ? storeLoopParams() : clearStoreLoopParams()
+})
 
 let arr = [EL_LOOP_START_M, EL_LOOP_START_S, EL_LOOP_END_M, EL_LOOP_END_S]
 arr.forEach(el => {
   el.addEventListener('change', rangeFormatter.bind(null, el))
+  el.addEventListener('change', () => EL_LOOP_SAVE.checked && storeLoopParams())
   el.addEventListener('focus', () => el.select())
 })
 
 chrome.runtime.connect({ name: "popup" });
+
+init()
 
 sendMessage(
   { init: true },
@@ -52,6 +64,19 @@ sendMessage(
     }
   }
 )
+
+/**
+ * 如果迴圈數值有儲存起來就初始化到 el 上
+ */
+function init() {
+  const isSave = useStorage(LS_SAVE_LOOP) === 'true'
+
+  if (isSave) {
+    EL_LOOP_SAVE.checked = true
+    setTimeToEl(useStorage(LS_LOOP_S) || 0, EL_LOOP_START_M, EL_LOOP_START_S)
+    setTimeToEl(useStorage(LS_LOOP_E) || 0, EL_LOOP_END_M, EL_LOOP_END_S)
+  }
+}
 
 /**
  * 設置速率
@@ -115,8 +140,8 @@ function startLoop() {
  * - 觸發清空 content 的 timer
  */
 function stopLoop() {
-  setTimeToEl(0, EL_LOOP_START_M, EL_LOOP_START_S)
-  setTimeToEl(0, EL_LOOP_END_M, EL_LOOP_END_S)
+  // setTimeToEl(0, EL_LOOP_START_M, EL_LOOP_START_S)
+  // setTimeToEl(0, EL_LOOP_END_M, EL_LOOP_END_S)
   sendMessage({ stopLooping: true })
   setLoopState(false)
 }
@@ -144,4 +169,24 @@ function setTimeToEl(val, elMin, elSec) {
 
 function setNotSupport() {
   // 
+}
+
+function useStorage(key, value) {
+  if (key && value === undefined) {
+    return localStorage.getItem(key)
+  } else if (key) {
+    localStorage.setItem(key, value)
+  }
+}
+
+function storeLoopParams() {
+  const loopStartAt = Number(EL_LOOP_START_M.value) * 60 + Number(EL_LOOP_START_S.value)
+  const loopEndAt = Number(EL_LOOP_END_M.value) * 60 + Number(EL_LOOP_END_S.value)
+  useStorage(LS_LOOP_S, loopStartAt)
+  useStorage(LS_LOOP_E, loopEndAt)
+}
+
+function clearStoreLoopParams() {
+  useStorage(LS_LOOP_S, 0)
+  useStorage(LS_LOOP_E, 0)
 }

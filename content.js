@@ -46,6 +46,7 @@ chrome.runtime.onMessage.addListener((data, sender, sendResponse) => {
     ytVideoEl.playbackRate = data.rate
   }
 
+  // 有可能是 0 所以不能以 boolean 判斷
   if (Object(data).hasOwnProperty('loopStartAt')) {
     _t.startLoop(data.loopStartAt, data.loopEndAt)
   }

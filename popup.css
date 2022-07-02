@@ -16,6 +16,10 @@ body {
   font-size: .875rem;
 }
 
+label {
+  user-select: none;
+}
+
 .main-c {
   color: var(--ytt-main)
 }

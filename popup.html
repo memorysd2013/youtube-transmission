@@ -12,7 +12,6 @@
   <div class="container flex-box">
     <img src="/images/ytt128.png" alt="ytt" class="logo">
     <span class="title">YouTube Transmission</span>
-    <span class="version">v1.0.0</span>
   </div>
 
   <div class="divide"></div>
@@ -32,7 +31,7 @@
   <div class="divide"></div>
 
   <div class="container">
-    <span>Loop Setting</span>
+    <span>Loop</span>
     <i id="ytt-looping" class="fa-solid fa-arrows-rotate"></i>
     <span id="ytt-loop-prompt"></span>
     <div class="flex-box">
@@ -45,6 +44,10 @@
       <input type="number" name="loop-end-sec" id="ytt-loop-end-s" value="00">
       <button id="ytt-loop" class="ytt-button">Loop</button>
       <button id="ytt-stop" class="ytt-button">Stop</button>
+    </div>
+    <div class="flex-box">
+      <input type="checkbox" name="ytt-save-loop-params" id="ytt-save-loop-params">
+      <label for="ytt-save-loop-params">Save Loop Params</label>
     </div>
   </div>
 
